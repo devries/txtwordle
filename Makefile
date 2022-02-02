@@ -1,5 +1,5 @@
 BINARY := txtwordle
-SOURCE := main.go go.mod
+SOURCE := display.go main.go go.mod
 
 .PHONY: dist clean all build
 
