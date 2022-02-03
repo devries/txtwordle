@@ -119,18 +119,24 @@ func drawState(rows, columns int, state State, word string) {
 	grayLetters := make(map[rune]bool)
 
 	for y, guess := range state.Guesses {
+		guessLetters := []rune(guess)
 		// Collect letter counts
 		letterTotals := make(map[rune]int)
-		for _, letter := range correctLetters {
+		greenTotals := make(map[rune]int)
+		for x, letter := range correctLetters {
+			if letter == guessLetters[x] {
+				greenTotals[letter] += 1
+			}
 			letterTotals[letter] += 1
 		}
 
-		for x, letter := range guess {
+		for x, letter := range guessLetters {
 			if letter == correctLetters[x] {
 				letterTotals[letter] -= 1
+				greenTotals[letter] -= 1
 				greenBackground()
 				greenLetters[letter] = true
-			} else if letterTotals[letter] > 0 {
+			} else if letterTotals[letter]-greenTotals[letter] > 0 {
 				yellowBackground()
 				letterTotals[letter] -= 1
 				yellowLetters[letter] = true
@@ -178,17 +184,23 @@ func getCopyPaste(state State, word string, days int) string {
 
 	fmt.Fprintf(&bld, "Wordle %d %d/6\n\n", days+1, len(state.Guesses))
 	for _, guess := range state.Guesses {
+		guessLetters := []rune(guess)
 		// Collect letter counts
 		letterTotals := make(map[rune]int)
-		for _, letter := range correctLetters {
+		greenTotals := make(map[rune]int)
+		for x, letter := range correctLetters {
+			if letter == guessLetters[x] {
+				greenTotals[letter] += 1
+			}
 			letterTotals[letter] += 1
 		}
 
 		for x, letter := range guess {
 			if letter == correctLetters[x] {
 				letterTotals[letter] -= 1
+				greenTotals[letter] -= 1
 				fmt.Fprintf(&bld, "🟩")
-			} else if letterTotals[letter] > 0 {
+			} else if letterTotals[letter]-greenTotals[letter] > 0 {
 				letterTotals[letter] -= 1
 				fmt.Fprintf(&bld, "🟨")
 			} else {
