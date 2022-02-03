@@ -1,5 +1,5 @@
 BINARY := txtwordle
-SOURCE := display.go main.go go.mod
+SOURCE := display.go main.go go.mod go.sum
 
 .PHONY: dist clean all build
 

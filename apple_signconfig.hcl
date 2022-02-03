@@ -12,3 +12,9 @@ sign {
 zip {
   output_path = "dist/txtwordle-mac.zip"
 }
+
+dmg {
+  output_path = "dist/txtwordle.dmg"
+  volume_name = "TxtWordle"
+}
+

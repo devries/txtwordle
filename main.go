@@ -9,9 +9,43 @@ import (
 	"syscall"
 	"time"
 	"unicode"
+
+	"github.com/spf13/pflag"
 )
 
+var clNumber = pflag.IntP("number", "n", -1, "wordle number")
+var clDate = pflag.StringP("date", "d", "", "wordle date (YYYY-MM-DD)")
+
 func main() {
+	pflag.Parse()
+	var days int
+
+	if *clNumber >= 0 {
+		days = *clNumber - 1
+	} else {
+		var now time.Time
+		zone, err := time.LoadLocation("America/New_York")
+		if err != nil {
+			panic(err)
+		}
+		if *clDate != "" {
+			now, err = time.ParseInLocation("2006-01-02", *clDate, zone)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "The date %s is not in the proper format, it should be in YYYY-MM-DD format.\n", *clDate)
+				os.Exit(1)
+			}
+		} else {
+			now = time.Now()
+		}
+		firstDay := time.Date(2021, time.June, 20, 0, 0, 0, 0, zone)
+		days = int(now.Sub(firstDay).Truncate(24*time.Hour) / time.Hour / 24)
+	}
+
+	if days < 0 || days >= len(wordList) {
+		fmt.Fprintf(os.Stderr, "The date or day selected is outside the range of available wordles\n")
+		os.Exit(2)
+	}
+
 	r, c := initialize()
 	clear()
 	hideCursor()
@@ -23,14 +57,6 @@ func main() {
 
 	sigChan := make(chan os.Signal)
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM, syscall.SIGWINCH)
-
-	zone, err := time.LoadLocation("America/New_York")
-	if err != nil {
-		panic(err)
-	}
-	firstDay := time.Date(2021, time.June, 20, 0, 0, 0, 0, zone)
-	now := time.Now()
-	days := int(now.Sub(firstDay).Truncate(24*time.Hour) / time.Hour / 24)
 
 	word := strings.ToUpper(wordList[days])
 	state := State{[]string{}, []rune{}, false}
