@@ -33,7 +33,6 @@ func main() {
 	days := int(now.Sub(firstDay).Truncate(24*time.Hour) / time.Hour / 24)
 
 	word := strings.ToUpper(wordList[days])
-	word = "ABBEY"
 	state := State{[]string{}, []rune{}}
 
 	// Game loop
@@ -57,7 +56,6 @@ gameloop:
 		case letter := <-input:
 			// Add or delete letter
 			move(r-1, 0)
-			// fmt.Printf("CHAR: %4d", c)
 			switch letter {
 			case 10: // Enter
 				if len(state.Current) == 5 {
