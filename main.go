@@ -33,7 +33,7 @@ func main() {
 	days := int(now.Sub(firstDay).Truncate(24*time.Hour) / time.Hour / 24)
 
 	word := strings.ToUpper(wordList[days])
-	state := State{[]string{}, []rune{}}
+	state := State{[]string{}, []rune{}, false}
 
 	// Game loop
 gameloop:
@@ -65,6 +65,7 @@ gameloop:
 					state.Current = []rune{}
 					if guess == word {
 						drawState(r, c, state, word)
+						state.Win = true
 						break gameloop
 					}
 				}
@@ -182,7 +183,13 @@ func getCopyPaste(state State, word string, days int) string {
 
 	var bld strings.Builder
 
-	fmt.Fprintf(&bld, "Wordle %d %d/6\n\n", days+1, len(state.Guesses))
+	switch state.Win {
+	case true:
+		fmt.Fprintf(&bld, "Wordle %d %d/6\n\n", days+1, len(state.Guesses))
+	case false:
+		fmt.Fprintf(&bld, "Wordle %d X/6\n\n", days+1)
+	}
+
 	for _, guess := range state.Guesses {
 		guessLetters := []rune(guess)
 		// Collect letter counts
@@ -327,4 +334,5 @@ func readKeys(input chan rune) {
 type State struct {
 	Guesses []string
 	Current []rune
+	Win     bool
 }
