@@ -13,14 +13,27 @@ import (
 	"github.com/spf13/pflag"
 )
 
-var clNumber = pflag.IntP("number", "n", -1, "wordle number")
-var clDate = pflag.StringP("date", "d", "", "wordle date (YYYY-MM-DD)")
+var clNumber = pflag.IntP("number", "n", 0, "wordle number")
+var clDate = pflag.StringP("date", "d", "", "wordle date formatted as YYYY-MM-DD")
+var helpFlag = pflag.BoolP("help", "h", false, "show this help information")
+
+func myUsage() {
+	fmt.Fprintf(os.Stderr, "Play Wordle\nUsage: %s [OPTIONS]\nIf you do not specify any arguments, it will load today's Wordle.\n\n", os.Args[0])
+	pflag.PrintDefaults()
+}
 
 func main() {
+	pflag.Usage = myUsage
 	pflag.Parse()
+
+	if *helpFlag {
+		myUsage()
+		os.Exit(0)
+	}
+
 	var days int
 
-	if *clNumber >= 0 {
+	if *clNumber > 0 {
 		days = *clNumber - 1
 	} else {
 		var now time.Time
