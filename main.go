@@ -33,6 +33,7 @@ func main() {
 	days := int(now.Sub(firstDay).Truncate(24*time.Hour) / time.Hour / 24)
 
 	word := strings.ToUpper(wordList[days])
+	word = "ABBEY"
 	state := State{[]string{}, []rune{}}
 
 	// Game loop
@@ -115,30 +116,50 @@ func drawBoard(rows, columns int) {
 func drawState(rows, columns int, state State, word string) {
 	correctLetters := []rune(word)
 
+	greenLetters := make(map[rune]bool)
+	yellowLetters := make(map[rune]bool)
+	grayLetters := make(map[rune]bool)
+
 	for y, guess := range state.Guesses {
+		// Collect letter counts
+		letterTotals := make(map[rune]int)
+		for _, letter := range correctLetters {
+			letterTotals[letter] += 1
+		}
+
 		for x, letter := range guess {
-			// Check if this letter is in the word
-			inword := false
-			for _, l := range correctLetters {
-				if letter == l {
-					inword = true
-					break
-				}
-			}
-
 			if letter == correctLetters[x] {
-				setGreen(rows, columns, letter)
+				letterTotals[letter] -= 1
 				greenBackground()
-			} else if inword {
-				setYellow(rows, columns, letter)
+				greenLetters[letter] = true
+			} else if letterTotals[letter] > 0 {
 				yellowBackground()
+				letterTotals[letter] -= 1
+				yellowLetters[letter] = true
 			} else {
-				setGray(rows, columns, letter)
 				grayBackground()
+				grayLetters[letter] = true
 			}
-
 			drawLetter(rows, columns, x, y, letter)
 			defaultBackground()
+		}
+	}
+
+	for k, v := range grayLetters {
+		if v {
+			setGray(rows, columns, k)
+		}
+	}
+
+	for k, v := range yellowLetters {
+		if v {
+			setYellow(rows, columns, k)
+		}
+	}
+
+	for k, v := range greenLetters {
+		if v {
+			setGreen(rows, columns, k)
 		}
 	}
 
@@ -159,19 +180,18 @@ func getCopyPaste(state State, word string, days int) string {
 
 	fmt.Fprintf(&bld, "Wordle %d %d/6\n\n", days+1, len(state.Guesses))
 	for _, guess := range state.Guesses {
-		for x, letter := range guess {
-			// Check if this letter is in the word
-			inword := false
-			for _, l := range correctLetters {
-				if letter == l {
-					inword = true
-					break
-				}
-			}
+		// Collect letter counts
+		letterTotals := make(map[rune]int)
+		for _, letter := range correctLetters {
+			letterTotals[letter] += 1
+		}
 
+		for x, letter := range guess {
 			if letter == correctLetters[x] {
+				letterTotals[letter] -= 1
 				fmt.Fprintf(&bld, "🟩")
-			} else if inword {
+			} else if letterTotals[letter] > 0 {
+				letterTotals[letter] -= 1
 				fmt.Fprintf(&bld, "🟨")
 			} else {
 				fmt.Fprintf(&bld, "⬜")
