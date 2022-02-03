@@ -95,8 +95,8 @@ gameloop:
 		case letter := <-input:
 			// Add or delete letter
 			move(r-1, 0)
-			switch letter {
-			case 10: // Enter
+			switch {
+			case letter == 10: // Enter
 				if len(state.Current) == 5 {
 					// Check for win
 					guess := string(state.Current)
@@ -108,11 +108,11 @@ gameloop:
 						break gameloop
 					}
 				}
-			case 127:
+			case letter == 127:
 				if len(state.Current) > 0 {
 					state.Current = state.Current[:len(state.Current)-1]
 				}
-			default:
+			case letter >= 'A' && letter <= 'Z':
 				// Add a letter
 				if len(state.Current) < 5 {
 					state.Current = append(state.Current, letter)
