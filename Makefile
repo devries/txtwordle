@@ -1,7 +1,9 @@
 BINARY := txtwordle
 SOURCE := display.go main.go go.mod go.sum
+APPID := com.idolstarastronomer.txtwordle
+VERSION := 1.1
 
-.PHONY: dist clean all build
+.PHONY: dist clean all build sign
 
 build/darwin/$(BINARY): $(SOURCE)
 	mkdir -p build/darwin
@@ -37,7 +39,17 @@ dist/$(BINARY)-install.sh: build/shar.tar.gz shar/sh-header
 	cat shar/sh-header build/shar.tar.gz > dist/$(BINARY)-install.sh
 	chmod 755 dist/$(BINARY)-install.sh
 
-all: dist/$(BINARY)-install.sh build/darwinuniversal/$(BINARY) ## Make everything
+all: dist/$(BINARY)-install.sh build/darwinuniversal/$(BINARY) ## Make everything except signed macos package
+
+dist/$(BINARY)-mac.pkg: build/darwinuniversal/$(BINARY)
+	codesign --deep --force --options=runtime --sign "${AC_APPID}" --timestamp ./build/darwinuniversal/$(BINARY)
+	mkdir -p build/tmp/usr/local/bin
+	cp build/darwinuniversal/$(BINARY) build/tmp/usr/local/bin/$(BINARY)
+	pkgbuild --root "./build/tmp" --identifier "$(APPID)" --version "$(VERSION)" --sign "${AC_INSTID}" ./dist/$(BINARY)-mac.pkg 
+	xcrun altool --notarize-app --primary-bundle-id "$(APPID)" --username "${AC_USERNAME}" --password "@env:AC_PASSWORD" --asc-provider "${AC_PROVIDER}" --file dist/$(BINARY)-mac.pkg
+	@echo "Run xcrun altool --notarization-info UUID --username \"${AC_USERNAME}\" --password \"@env:AC_PASSWORD\" to check on notarization"
+
+sign: dist/$(BINARY)-mac.pkg ## Sign Mac Binary and make package
 
 clean: ## Clean everything
 	rm -rf build || true
