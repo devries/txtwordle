@@ -1,7 +1,7 @@
 BINARY := txtwordle
 SOURCE := display.go main.go go.mod go.sum
 APPID := com.idolstarastronomer.txtwordle
-VERSION := 1.1
+VERSION := 1.2
 
 .PHONY: dist clean all build sign
 
