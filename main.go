@@ -20,6 +20,18 @@ var helpFlag = pflag.BoolP("help", "h", false, "show this help information")
 func myUsage() {
 	fmt.Fprintf(os.Stderr, "Play Wordle\nUsage: %s [OPTIONS]\nIf you do not specify any arguments, it will load today's Wordle.\n\n", os.Args[0])
 	pflag.PrintDefaults()
+	txt := `Guess the WORDLE in 6 tries.
+Each Guess must be a valid 5 letter word. Hit the enter button to submit.
+After each guess, the color of the tiles will change to show how close your
+guess was to the word.
+
+Examples` +
+		"\n\n┏━┳━┳━┳━┳━┓\n\x1b┃[97;42mW\x1b[39;49m┃E┃A┃R┃Y┃\n┗━┻━┻━┻━┻━┛\nThe letter W is in the word and in the correct spot.\n\n" +
+		"┏━┳━┳━┳━┳━┓\n┃P┃\x1b[97;43mI\x1b[39;49m┃L┃L┃S┃\n┗━┻━┻━┻━┻━┛\nThe letter I is in the word, but in the wrong spot.\n\n" +
+		"┏━┳━┳━┳━┳━┓\n┃V┃A┃G┃\x1b[97;100mU\x1b[39;49m┃E┃\n┗━┻━┻━┻━┻━┛\nThe letter U is not in the word in any spot.\n\n" +
+		"A new WORDLE will be available each day\n"
+	fmt.Println()
+	fmt.Fprint(os.Stderr, txt)
 }
 
 func main() {
