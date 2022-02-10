@@ -49,12 +49,10 @@ func main() {
 		days = *clNumber - 1
 	} else {
 		var now time.Time
-		zone, err := time.LoadLocation("America/New_York")
-		if err != nil {
-			panic(err)
-		}
+		var err error
+
 		if *clDate != "" {
-			now, err = time.ParseInLocation("2006-01-02", *clDate, zone)
+			now, err = time.ParseInLocation("2006-01-02", *clDate, time.Local)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "The date %s is not in the proper format, it should be in YYYY-MM-DD format.\n", *clDate)
 				os.Exit(1)
@@ -62,7 +60,7 @@ func main() {
 		} else {
 			now = time.Now()
 		}
-		firstDay := time.Date(2021, time.June, 20, 0, 0, 0, 0, zone)
+		firstDay := time.Date(2021, time.June, 20, 0, 0, 0, 0, time.Local)
 		days = int(now.Sub(firstDay).Truncate(24*time.Hour) / time.Hour / 24)
 	}
 
