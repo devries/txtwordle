@@ -29,7 +29,7 @@ Examples` +
 		"\n\n┏━┳━┳━┳━┳━┓\n┃\x1b[97;42mW\x1b[39;49m┃E┃A┃R┃Y┃\n┗━┻━┻━┻━┻━┛\nThe letter W is in the word and in the correct spot.\n\n" +
 		"┏━┳━┳━┳━┳━┓\n┃P┃\x1b[97;43mI\x1b[39;49m┃L┃L┃S┃\n┗━┻━┻━┻━┻━┛\nThe letter I is in the word, but in the wrong spot.\n\n" +
 		"┏━┳━┳━┳━┳━┓\n┃V┃A┃G┃\x1b[97;100mU\x1b[39;49m┃E┃\n┗━┻━┻━┻━┻━┛\nThe letter U is not in the word in any spot.\n\n" +
-		"A new WORDLE will be available each day\n"
+		"A new WORDLE will be available each day!\n"
 	fmt.Println()
 	fmt.Fprint(os.Stderr, txt)
 }
@@ -44,8 +44,15 @@ func main() {
 	}
 
 	var days int
+	var daysFlagSet bool
 
-	if *clNumber > 0 {
+	pflag.Visit(func(f *pflag.Flag) {
+		if f.Name == "number" {
+			daysFlagSet = true
+		}
+	})
+
+	if daysFlagSet {
 		days = *clNumber
 	} else {
 		var now time.Time
