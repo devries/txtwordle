@@ -48,7 +48,7 @@ dist/$(BINARY)-mac.pkg: build/darwinuniversal/$(BINARY)
 	pkgbuild --root "./build/tmp" --identifier "$(APPID)" --version "$(VERSION)" --sign "${AC_INSTID}" ./dist/$(BINARY)-mac.pkg 
 	xcrun altool --notarize-app --primary-bundle-id "$(APPID)" --username "${AC_USERNAME}" --password "@env:AC_PASSWORD" --asc-provider "${AC_PROVIDER}" --file dist/$(BINARY)-mac.pkg
 	@echo "Run xcrun altool --notarization-info UUID --username \"${AC_USERNAME}\" --password \"@env:AC_PASSWORD\" to check on notarization"
-	@echo "When complete run xcrun stapler staple ./build/$(BINARY)-mac.pkg"
+	@echo "When complete run xcrun stapler staple ./dist/$(BINARY)-mac.pkg"
 
 sign: dist/$(BINARY)-mac.pkg ## Sign Mac Binary and make package
 
