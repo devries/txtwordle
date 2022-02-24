@@ -140,6 +140,9 @@ gameloop:
 
 	move(r-1, 0)
 	cleanup()
+	if state.Win == false {
+		fmt.Printf("Solution: %s\n\n", word)
+	}
 	res := getCopyPaste(state, word, days)
 	fmt.Print(res)
 }
