@@ -142,6 +142,21 @@ gameloop:
 	cleanup()
 	if state.Win == false {
 		fmt.Printf("Solution: %s\n\n", word)
+	} else {
+		switch len(state.Guesses) {
+		case 1:
+			fmt.Print("Genius\n\n")
+		case 2:
+			fmt.Print("Magnificent\n\n")
+		case 3:
+			fmt.Print("Impressive\n\n")
+		case 4:
+			fmt.Print("Splendid\n\n")
+		case 5:
+			fmt.Print("Great\n\n")
+		case 6:
+			fmt.Print("Phew\n\n")
+		}
 	}
 	res := getCopyPaste(state, word, days)
 	fmt.Print(res)
