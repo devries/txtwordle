@@ -1,6 +1,6 @@
 #!/bin/sh
 echo ""
-echo "pwned - starting installation... please wait"
+echo "txtwordle - starting installation... please wait"
 echo ""
 
 # create a temp directory to extract to.
