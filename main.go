@@ -76,6 +76,8 @@ func main() {
 		os.Exit(2)
 	}
 
+	stats, _ := getStats()
+
 	r, c := initialize()
 	clear()
 	hideCursor()
@@ -141,8 +143,12 @@ gameloop:
 	move(r-1, 0)
 	cleanup()
 	if state.Win == false {
+		stats = addLoss(stats)
+
 		fmt.Printf("Solution: %s\n\n", word)
 	} else {
+		stats = addWin(stats, len(state.Guesses))
+
 		switch len(state.Guesses) {
 		case 1:
 			fmt.Print("Genius\n\n")
@@ -158,8 +164,11 @@ gameloop:
 			fmt.Print("Phew\n\n")
 		}
 	}
+	statOutput := getStatsInfo(stats)
+	fmt.Print(statOutput)
 	res := getCopyPaste(state, word, days)
 	fmt.Print(res)
+	saveStats(stats)
 }
 
 func drawBoard(rows, columns int) {
