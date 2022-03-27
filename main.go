@@ -76,7 +76,7 @@ func main() {
 		os.Exit(2)
 	}
 
-	stats, _ := getStats()
+	stats, _ := getFileStats()
 
 	r, c := initialize()
 	clear()
@@ -168,7 +168,7 @@ gameloop:
 	fmt.Print(statOutput)
 	res := getCopyPaste(state, word, days)
 	fmt.Print(res)
-	saveStats(stats)
+	saveFileStats(stats)
 }
 
 func drawBoard(rows, columns int) {
