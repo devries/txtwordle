@@ -150,7 +150,7 @@ func addWin(s WordleStats, guesses int) WordleStats {
 
 	sumGuess := 0
 	for i, v := range []string{"1", "2", "3", "4", "5", "6"} {
-		sumGuess = s.Guesses[v] * (i + 1)
+		sumGuess += s.Guesses[v] * (i + 1)
 	}
 
 	s.AverageGuesses = int(math.Round(float64(sumGuess) / float64(s.GamesWon)))

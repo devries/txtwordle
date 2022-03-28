@@ -16,6 +16,7 @@ import (
 var clNumber = pflag.IntP("number", "n", 0, "wordle number")
 var clDate = pflag.StringP("date", "d", "", "wordle date formatted as YYYY-MM-DD")
 var helpFlag = pflag.BoolP("help", "h", false, "show this help information")
+var noStatsFlag = pflag.BoolP("stats", "s", false, "suppress updating win/loss statistics")
 
 func myUsage() {
 	fmt.Fprintf(os.Stderr, "Play Wordle\nUsage: %s [OPTIONS]\nIf you do not specify any arguments, it will load today's Wordle.\n\n", os.Args[0])
@@ -164,11 +165,13 @@ gameloop:
 			fmt.Print("Phew\n\n")
 		}
 	}
-	statOutput := getStatsInfo(stats)
-	fmt.Print(statOutput)
+	if !*noStatsFlag {
+		statOutput := getStatsInfo(stats)
+		fmt.Print(statOutput)
+		saveFileStats(stats)
+	}
 	res := getCopyPaste(state, word, days)
 	fmt.Print(res)
-	saveFileStats(stats)
 }
 
 func drawBoard(rows, columns int) {
