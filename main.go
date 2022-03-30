@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"path"
 	"strings"
 	"syscall"
 	"time"
@@ -16,7 +17,8 @@ import (
 var clNumber = pflag.IntP("number", "n", 0, "wordle number")
 var clDate = pflag.StringP("date", "d", "", "wordle date formatted as YYYY-MM-DD")
 var helpFlag = pflag.BoolP("help", "h", false, "show this help information")
-var noStatsFlag = pflag.BoolP("stats", "s", false, "suppress updating win/loss statistics")
+var showStatsFlag = pflag.BoolP("stats", "s", false, "show win/loss statistics")
+var noStatsFlag = pflag.BoolP("norecord", "r", false, "do not record win/loss statistics")
 
 func myUsage() {
 	fmt.Fprintf(os.Stderr, "Play Wordle\nUsage: %s [OPTIONS]\nIf you do not specify any arguments, it will load today's Wordle.\n\n", os.Args[0])
@@ -78,6 +80,11 @@ func main() {
 	}
 
 	stats, _ := getFileStats()
+	if *showStatsFlag {
+		statOutput := getStatsInfo(stats)
+		fmt.Print(statOutput)
+		os.Exit(0)
+	}
 
 	r, c := initialize()
 	clear()
@@ -171,6 +178,7 @@ gameloop:
 		saveFileStats(stats)
 	}
 	res := getCopyPaste(state, word, days)
+	saveDay(state, word, days)
 	fmt.Print(res)
 }
 
@@ -418,7 +426,43 @@ func readKeys(input chan rune) {
 }
 
 type State struct {
-	Guesses []string
-	Current []rune
-	Win     bool
+	Guesses []string `json:"guesses"`
+	Current []rune   `json:"current"`
+	Win     bool     `json:"win"`
+}
+
+func getDayFilename(days int) (string, error) {
+	var dayFile string
+
+	confdir, err := os.UserConfigDir()
+	if err != nil {
+		confdir = "."
+	}
+
+	appconfdir := path.Join(confdir, "txtwordle")
+	err = os.MkdirAll(appconfdir, 0750)
+	if err != nil {
+		return dayFile, fmt.Errorf("unable to create config directory %s", appconfdir)
+	}
+
+	return path.Join(appconfdir, fmt.Sprintf("%d.json", days)), nil
+}
+
+func saveDay(state State, word string, days int) error {
+	outfile, err := getDayFilename(days)
+	if err != nil {
+		return err
+	}
+
+	fout, err := os.Create(outfile)
+	if err != nil {
+		return err
+	}
+	defer fout.Close()
+
+	w := bufio.NewWriter(fout)
+	_, err = w.WriteString(getCopyPaste(state, word, days))
+	w.Flush()
+
+	return err
 }
