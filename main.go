@@ -445,7 +445,7 @@ func getDayFilename(days int) (string, error) {
 		return dayFile, fmt.Errorf("unable to create config directory %s", appconfdir)
 	}
 
-	return path.Join(appconfdir, fmt.Sprintf("%d.json", days)), nil
+	return path.Join(appconfdir, fmt.Sprintf("%d.txt", days)), nil
 }
 
 func saveDay(state State, word string, days int) error {
