@@ -176,9 +176,9 @@ gameloop:
 		statOutput := getStatsInfo(stats)
 		fmt.Print(statOutput)
 		saveFileStats(stats)
+		saveDay(state, word, days)
 	}
 	res := getCopyPaste(state, word, days)
-	saveDay(state, word, days)
 	fmt.Print(res)
 }
 
